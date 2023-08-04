@@ -7,6 +7,8 @@
 #include "raygui.h"
 #include "nfd.h"
 
+#include "UI.h"
+
 typedef struct {
     bool isLoaded;
     Music music;
@@ -29,35 +31,43 @@ void* load_music_thread(void* arg) {
 
 int main(){
     bool exitWindow = false;
-    int windowWidth = 800;
-    int windowHeight = 600; 
+    UI UI;
+    InitUIWindowProperties(&UI);
+
 
     pthread_t musicLoadThread;
     MusicLoadResult musicLoadResult = { false };
 
-    InitWindow(windowWidth, windowHeight, "AudioAura");
+    InitWindow(UI.windowWidth, UI.windowHeight, "AudioAura");
 
     SetTargetFPS(60);
 
-    SetWindowPosition((1920 + (3440 - windowWidth) / 2), (1440 - windowHeight) / 2);
+    SetWindowPosition(UI.benDebugWindowPosX, UI.benDebugWindowPosY);
 
     InitAudioDevice();
 
     Rectangle rect;
-    rect.x = windowWidth/2.0;
-    rect.y = windowHeight/2.0;
+    rect.x = UI.windowWidth/2.0;
+    rect.y = UI.windowHeight/2.0;
 
     rect.width = 100;
     rect.height = 100;
 
     while (!exitWindow) {
         
-        if (IsKeyPressed(KEY_SPACE) || GuiButton((Rectangle) {0, 0, 200, 40},"Load Music")) {
+        if (IsKeyPressed(KEY_SPACE) || GuiButton(UI.musicButton, "Load Music")) {
             pthread_create(&musicLoadThread, NULL, load_music_thread, &musicLoadResult);
         }
 
         if (musicLoadResult.isLoaded) {
             UpdateMusicStream(musicLoadResult.music);
+
+            float currentTime = GetMusicTimePlayed(musicLoadResult.music);
+            float songLength = GetMusicTimeLength(musicLoadResult.music);
+
+            float progress = (int)(currentTime / songLength * 100.0f);
+
+            progress = GuiSlider(UI.slider, "Progress", NULL, &progress, 0, 100);
         }
 
         BeginDrawing();

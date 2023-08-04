@@ -39,7 +39,7 @@ if (NOT nfd_POPULATED)
     target_include_directories(nfd PRIVATE ${nfd_SOURCE_DIR}/src/include ${GTK3_INCLUDE_DIRS})
 endif ()
 
-add_executable(AudioAura main.c)
+add_executable(AudioAura src/main.c src/UI.c)
 target_include_directories(AudioAura PRIVATE 
     ${raylib_SOURCE_DIR}/src 
     ${nfd_SOURCE_DIR}/src/include
