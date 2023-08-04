@@ -24,8 +24,6 @@ if (NOT raylib_FOUND)
     endif ()
 endif ()
 
-
-
 FetchContent_Declare(
         nfd
         GIT_REPOSITORY https://github.com/mlabbe/nativefiledialog.git

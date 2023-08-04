@@ -46,13 +46,6 @@ int main(){
 
     InitAudioDevice();
 
-    Rectangle rect;
-    rect.x = UI.windowWidth/2.0;
-    rect.y = UI.windowHeight/2.0;
-
-    rect.width = 100;
-    rect.height = 100;
-
     while (!exitWindow) {
         
         if (IsKeyPressed(KEY_SPACE) || GuiButton(UI.musicButton, "Load Music")) {
