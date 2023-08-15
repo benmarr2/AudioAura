@@ -4,9 +4,7 @@ project(AudioAura)
 set(CMAKE_C_STANDARD 99)
 
 find_package(raylib 4.5 QUIET)
-find_package(PkgConfig REQUIRED)
-find_package(SndFile REQUIRED)
-pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+
 
 if (NOT raylib_FOUND)
     include(FetchContent)
@@ -37,9 +35,9 @@ if (NOT nfd_POPULATED)
     target_include_directories(nfd PRIVATE ${nfd_SOURCE_DIR}/src/include ${GTK3_INCLUDE_DIRS})
 endif ()
 
-add_executable(AudioAura src/main.c src/UI.c)
+add_executable(AudioAura src/main.c src/ui.c src/playlist.c)
 target_include_directories(AudioAura PRIVATE 
     ${raylib_SOURCE_DIR}/src 
     ${nfd_SOURCE_DIR}/src/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(AudioAura raylib nfd SndFile::sndfile ${GTK3_LIBRARIES})
+target_link_libraries(AudioAura raylib nfd ${GTK3_LIBRARIES})

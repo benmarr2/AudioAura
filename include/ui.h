@@ -11,6 +11,9 @@ typedef struct{
 
     Rectangle musicButton;
     Rectangle slider;
+    Rectangle playlistButton;
+    Rectangle playlistHolder;
+
 } UI;
 
 void InitUIWindowProperties(UI* windowProps);

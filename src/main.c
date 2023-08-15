@@ -2,16 +2,17 @@
 #include <pthread.h>
 
 #include "raylib.h"
-
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 #include "nfd.h"
 
-#include "UI.h"
+#include "ui.h"
+#include "playlist.h"
 
 typedef struct {
     bool isLoaded;
     Music music;
+    char songPath[1024];
 } MusicLoadResult;
 
 void* load_music_thread(void* arg) {
@@ -24,13 +25,14 @@ void* load_music_thread(void* arg) {
         result->music = LoadMusicStream(outPath);
         PlayMusicStream(result->music);
         result->isLoaded = true;
+        strncpy(result->songPath, outPath, sizeof(result->songPath) - 1); // safely copy the path to result
     }
 
     return NULL;
 }
 
 int main(){
-    bool exitWindow = false;
+
     UI UI;
     InitUIWindowProperties(&UI);
 
@@ -45,11 +47,14 @@ int main(){
     SetWindowPosition(UI.benDebugWindowPosX, UI.benDebugWindowPosY);
 
     InitAudioDevice();
+    Playlist Playlist;
+    InitPlaylist(&Playlist);
 
-    while (!exitWindow) {
+    while (!WindowShouldClose()) {
         
-        if (IsKeyPressed(KEY_SPACE) || GuiButton(UI.musicButton, "Load Music")) {
+        if (IsKeyPressed(KEY_SPACE) || GuiButton(UI.musicButton, "Load Music") || GuiButton(UI.playlistButton,  "Add to Playlist")) {
             pthread_create(&musicLoadThread, NULL, load_music_thread, &musicLoadResult);
+            AddSong(&Playlist, musicLoadResult.songPath);
         }
 
         if (musicLoadResult.isLoaded) {
@@ -60,7 +65,10 @@ int main(){
 
             float progress = (int)(currentTime / songLength * 100.0f);
 
-            progress = GuiSlider(UI.slider, "Progress", NULL, &progress, 0, 100);
+            progress = GuiSliderBar(UI.slider, "Progress", NULL, &progress, 0, 100);
+
+            GuiListView(UI.playlistHolder, "List", &Playlist.songCount, &Playlist.currentSong);
+
         }
 
         BeginDrawing();
